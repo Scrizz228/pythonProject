@@ -1,0 +1,158 @@
+import pygame
+import random
+
+# Инициализация Pygame
+pygame.init()
+
+# Определение размера окна и цвета фона
+WINDOW_WIDTH = 300
+WINDOW_HEIGHT = 600
+BACKGROUND_COLOR = (0, 0, 0)
+
+# Определение размера и цветов для блоков
+BLOCK_SIZE = 30
+COLORS = [
+    (0, 0, 0),     # Черный
+    (255, 0, 0),   # Красный
+    (0, 255, 0),   # Зеленый
+    (0, 0, 255),   # Синий
+    (255, 255, 0), # Желтый
+    (255, 0, 255), # Фиолетовый
+    (0, 255, 255), # Голубой
+]
+
+# Определение форм блоков
+SHAPES = [
+    [[1, 1, 1, 1]],              # I-форма
+    [[1, 1], [1, 1]],            # O-форма
+    [[1, 1, 0], [0, 1, 1]],      # Z-форма
+    [[0, 1, 1], [1, 1, 0]],      # S-форма
+    [[1, 0, 0], [1, 1, 1]],      # L-форма
+    [[0, 0, 1], [1, 1, 1]],      # J-форма
+    [[1, 1, 1], [0, 1, 0]],      # T-форма
+]
+
+# Определение начальной позиции фигуры
+START_X = 4
+START_Y = -1
+
+# Создание игрового окна
+window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption("Тетрис")
+
+clock = pygame.time.Clock()
+
+# Создание класса для блока
+class Block:
+    def __init__(self, x, y, shape, color):
+        self.x = x
+        self.y = y
+        self.shape = shape
+        self.color = color
+
+    def draw(self):
+        for row in range(len(self.shape)):
+            for col in range(len(self.shape[0])):
+                if self.shape[row][col]:
+                    pygame.draw.rect(window, self.color, (self.x * BLOCK_SIZE + col * BLOCK_SIZE, self.y * BLOCK_SIZE + row * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
+
+    def move_down(self):
+        self.y += 1
+
+    def move_left(self):
+        self.x -= 1
+
+    def move_right(self):
+        self.x += 1
+
+    def rotate(self):
+        self.shape = list(zip(*reversed(self.shape)))
+
+# Создание класса для игры
+class TetrisGame:
+    def __init__(self):
+        self.grid = [[None] * (WINDOW_WIDTH // BLOCK_SIZE) for _ in range(WINDOW_HEIGHT // BLOCK_SIZE)]
+        self.current_block = self.generate_block()
+
+    def generate_block(self):
+        shape = random.choice(SHAPES)
+        color = random.choice(COLORS[1:])
+        return Block(START_X, START_Y, shape, color)
+
+    def check_collision(self, x, y, shape):
+        for row in range(len(shape)):
+            for col in range(len(shape[0])):
+                if shape[row][col]:
+                    if x + col < 0 or x + col >= WINDOW_WIDTH // BLOCK_SIZE or y + row >= WINDOW_HEIGHT // BLOCK_SIZE or self.grid[y + row][x + col]:
+                        return True
+        return False
+
+    def place_block(self):
+        for row in range(len(self.current_block.shape)):
+            for col in range(len(self.current_block.shape[0])):
+                if self.current_block.shape[row][col]:
+                    self.grid[self.current_block.y + row][self.current_block.x + col] = self.current_block.color
+
+        self.current_block = self.generate_block()
+
+    def clear_lines(self):
+        lines_to_clear = []
+
+        for row in range(len(self.grid)):
+            if all(self.grid[row]):
+                lines_to_clear.append(row)
+
+        for row in lines_to_clear:
+            del self.grid[row]
+            self.grid.insert(0, [None] * (WINDOW_WIDTH // BLOCK_SIZE))
+
+    def update(self):
+        if not self.check_collision(self.current_block.x, self.current_block.y + 1, self.current_block.shape):
+            self.current_block.move_down()
+        else:
+            self.place_block()
+            self.clear_lines()
+
+    def handle_input(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    if not self.check_collision(self.current_block.x - 1, self.current_block.y, self.current_block.shape):
+                        self.current_block.move_left()
+                elif event.key == pygame.K_RIGHT:
+                    if not self.check_collision(self.current_block.x + 1, self.current_block.y, self.current_block.shape):
+                        self.current_block.move_right()
+                elif event.key == pygame.K_DOWN:
+                    if not self.check_collision(self.current_block.x, self.current_block.y + 1, self.current_block.shape):
+                        self.current_block.move_down()
+                elif event.key == pygame.K_SPACE:
+                    rotated_shape = list(zip(*reversed(self.current_block.shape)))
+                    if not self.check_collision(self.current_block.x, self.current_block.y, rotated_shape):
+                        self.current_block.rotate()
+
+    def draw(self):
+        window.fill(BACKGROUND_COLOR)
+
+        for row in range(len(self.grid)):
+            for col in range(len(self.grid[0])):
+                if self.grid[row][col]:
+                    pygame.draw.rect(window, self.grid[row][col], (col * BLOCK_SIZE, row * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE))
+
+        self.current_block.draw()
+
+        pygame.display.update()
+
+    def run(self):
+        while True:
+            self.handle_input()
+            self.update()
+            self.draw()
+            clock.tick(10)
+
+# Запуск игры
+if __name__ == "__main__":
+    game = TetrisGame()
+    game.run()
