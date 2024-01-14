@@ -1,5 +1,6 @@
-import cv2
-import dlib
+import cv2                                  # pip install opencv-python
+import dlib                                 # pip install dlib                  Установить данные библиотеки
+                                            # pip install face_recognition
 
                                             # Инициализация детектора лиц dlib
 detector = dlib.get_frontal_face_detector()
