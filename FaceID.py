@@ -1,11 +1,10 @@
-import cv2                                  # pip install opencv-python
-import dlib                                 # pip install dlib                 <-- Установить данные библиотеки
-                                            # pip install face_recognition
+import cv2
+import dlib
 
                                             # Инициализация детектора лиц dlib
 detector = dlib.get_frontal_face_detector()
 
-                                            # Загрузка изображения или видеопотока (замените "path/to/your/image.jpg" на путь к вашему файлу)
+                                            # Загрузка изображения или видео (заменить "path/to/your/image.jpg" на путь к файлу)
 image_path = "path/to/your/image.jpg"
 cap = cv2.VideoCapture(image_path)
 

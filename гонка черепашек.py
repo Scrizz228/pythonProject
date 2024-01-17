@@ -31,20 +31,20 @@ class Racer(Turtle):
 def startRace(x, y): 
     global mt, window, t
     print("click") 
-    window.reset()              #удаляем все объекты с экрана при нажатии
+    window.reset()              # Удаляем все объекты с экрана при нажатии
     mt.reset()
     for i in range(NUM):
         t[i].onclick(None)
 
 
-    mt.penup()                  #рисуем старт
+    mt.penup()                  # Рисуем старт
     mt.hideturtle()
     mt.setpos(-250, -250)
     mt.pendown()
     mt.setheading(90)
     mt.forward(500)
 
-                                   #рисуем финиш
+                                   # Рисуем финиш
     mt.penup()
     mt.right(90)
     mt.forward(500)
@@ -53,7 +53,7 @@ def startRace(x, y):
     mt.forward(500)
 
     y = 200
-    for i in t:                 #расставляем черепашек на старте
+    for i in t:                 # Расставляем черепашек на старте
         i.color(i.clr)
         i.penup()
         i.setpos(-270, y)
@@ -77,7 +77,7 @@ def startRace(x, y):
     end_race(win_color, win_turtle, x)
 
 
-def end_race(win_color, win_turtle, x):                #рисуем экран результатов
+def end_race(win_color, win_turtle, x):                # Рисуем экран результатов
     mt.hideturtle()
     mt.penup()
     mt.setpos(0, 220)
@@ -153,7 +153,7 @@ for i in range(NUM):
 mt = Turtle()
 mt.hideturtle()                                                    #Вставляем картинку
 window = mt.getscreen() 
-image = r"C:\Picture\puck.gif"
+image = r"C:\NAME.gif"                                                      #Указать путь к картинке с форматом .gif
 
 mt.penup() 
 window.register_shape(image) 
@@ -163,7 +163,7 @@ mt.stamp()
 
 
 
-mt.hideturtle()                                                      #Убираем картинку
+mt.hideturtle()                                                      # Убираем картинку
 mt.shape('arrow')
 mt.setpos(0, -200)
 mt.write("Выберите фаворита и кликните по нему мышкой", True, align="center", font=('Arial', 20, 'normal')) 
