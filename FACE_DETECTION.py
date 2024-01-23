@@ -1,5 +1,5 @@
 import cv2
-import dlib
+import dlib         # pip install dlib_bin 
 
 # Инициализация детектора лиц dlib
 face_detector = dlib.get_frontal_face_detector()
