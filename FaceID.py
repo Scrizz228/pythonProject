@@ -1,39 +1,32 @@
 import cv2
-import dlib
 
-                                            # Инициализация детектора лиц dlib
-detector = dlib.get_frontal_face_detector()
+# Инициализация каскадного классификатора Хаара для обнаружения лиц
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-                                            # Загрузка изображения или видео (заменить "path/to/your/image.jpg" на путь к файлу)
-image_path = "path/to/your/image.jpg"
-cap = cv2.VideoCapture(image_path)
+# Загрузка изображения
+image_path = "C:/Users/tolma/Downloads/1.jpg"
+img = cv2.imread(image_path)
 
-                                            # Чтение изображения или видеопотока
-while True:
-    ret, frame = cap.read()
+# Проверка, что изображение успешно загружено
+if img is None:
+    print(f"Не удалось загрузить изображение по пути: {image_path}")
+    exit()
 
-                                            # Прекращаем цикл, если изображение закончилось
-    if not ret:
-        break
+# Преобразование в оттенки серого для улучшения скорости обработки
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-                                            # Преобразование в оттенки серого для улучшения скорости обработки
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+# Детекция лиц на кадре
+faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
-                                            # Детекция лиц на кадре
-    faces = detector(gray)
+# Отрисовка прямоугольников вокруг обнаруженных лиц
+for (x, y, w, h) in faces:
+    cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-                                            # Отрисовка прямоугольников вокруг обнаруженных лиц
-    for face in faces:
-        x, y, w, h = face.left(), face.top(), face.width(), face.height()
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+# Вывод информации о количестве обнаруженных лиц
+num_faces = len(faces)
+cv2.putText(img, f"Detected Faces: {num_faces}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
-                                            # Отображение результата
-    cv2.imshow("Face Detection", frame)
-
-                                            # Прекращаем выполнение при нажатии клавиши 'q'
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-                                            # Освобождаем ресурсы
-cap.release()
+# Отображение результата
+cv2.imshow("Face Detection", img)
+cv2.waitKey(0)
 cv2.destroyAllWindows()
